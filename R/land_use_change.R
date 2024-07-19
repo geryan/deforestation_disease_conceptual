@@ -12,7 +12,7 @@ stop0 <- function(x){
 
 
 land_use <- tibble(
-  year = 1:120
+  year = 1:200
 ) %>% 
   mutate(
     urban = year/200,
@@ -49,6 +49,29 @@ land_use <- tibble(
   )
 
 
+land_use <- tibble(
+  year = 1:100
+) %>% 
+  mutate(
+    urban = year/10,
+    periurban = urban*1.5,
+    rural = 40 + year/5,
+    edge = rural/3 - year/5.5,
+    forest = 100 - urban - periurban - rural - edge
+    ) |>
+  pivot_longer(
+    cols = -year,
+    names_to = "land_use",
+    values_to = "proportion"
+  ) %>%
+  mutate(
+    land_use = factor(
+      land_use,
+      levels = c("forest", "edge", "rural", "periurban", "urban")
+    )
+  )
+
+
 land_use %>% 
   ggplot +
   geom_area(
@@ -59,4 +82,6 @@ land_use %>%
     )
   ) +
   #scale_fill_viridis_d(begin = 0.75, end = 0)
-  scale_fill_manual(values = c("green4", "springgreen2", "lightgoldenrod1", "darkorchid3", "darkorchid4"))
+  scale_fill_manual(values = c("green4", "springgreen2", "lightgoldenrod1", "darkorchid3", "darkorchid4")) +
+  theme_void() +
+  labs(x = "Year", y = "Proportion of landscape", fill = "Land use type")
